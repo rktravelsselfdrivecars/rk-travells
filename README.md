@@ -1,10 +1,9 @@
-# Vinayaka Self Drive Cars and Car Rentals
+# RK Travels & Self-Drive Cars
 
-Welcome to the Vinayaka Self Drive Cars and Car Rentals website repository.
+Welcome to the RK Travels & Self-Drive Cars website repository.
 
 ## Development
 
-```sh
+```bash
 npm i
 npm run dev
-```
