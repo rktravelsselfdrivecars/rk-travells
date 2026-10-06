@@ -1,0 +1,216 @@
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface AttachCarModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function AttachCarModal({ isOpen, onClose }: AttachCarModalProps) {
+  const [formData, setFormData] = useState({
+    ownerName: "",
+    phoneNumber: "",
+    email: "",
+    brand: "",
+    model: "",
+    variant: "",
+    year: "",
+    fuelType: "",
+    transmission: "",
+    registrationNumber: "",
+    seatingCapacity: "",
+    availability: "",
+    availableFrom: "",
+    availableUntil: "",
+    additionalNotes: "",
+  });
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Construct WhatsApp message
+    const message = `*ATTACH YOUR CAR - VEHICLE SUBMISSION*
+
+*Owner Details*
+Name: ${formData.ownerName}
+Phone: ${formData.phoneNumber}
+Email: ${formData.email || "N/A"}
+
+*Vehicle Details*
+Brand/Make: ${formData.brand}
+Model: ${formData.model}
+Variant: ${formData.variant || "N/A"}
+Year: ${formData.year}
+Fuel Type: ${formData.fuelType}
+Transmission: ${formData.transmission || "N/A"}
+Registration Number: ${formData.registrationNumber}
+Seating Capacity: ${formData.seatingCapacity}
+
+*Availability:* ${formData.availability}
+${
+  formData.availability === "Specific Dates"
+    ? `Available From: ${formData.availableFrom}\nAvailable Until: ${formData.availableUntil}\n`
+    : ""
+}
+*Additional Notes:*
+${formData.additionalNotes || "N/A"}
+
+*PHOTOS & DOCUMENTS*
+I will send the required vehicle photos and documents separately in this WhatsApp chat.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/919177340016?text=${encodedMessage}`;
+    
+    // Tell user to attach files
+    alert("WhatsApp will open with your vehicle details. Please manually attach and send your vehicle photos and required documents in the same chat.\n\nRequired items:\n- Front photo\n- Rear photo\n- Left Side photo\n- Right Side photo\n- Interior photo\n- RC\n- Insurance\n- PUC\n- Owner ID");
+    
+    window.open(whatsappUrl, "_blank");
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold font-display text-ink">
+            Attach Your Car
+          </DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+          {/* OWNER DETAILS */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg border-b pb-2">Owner Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="ownerName">Owner Name *</Label>
+                <Input id="ownerName" required value={formData.ownerName} onChange={(e) => handleChange("ownerName", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">Phone Number *</Label>
+                <Input id="phoneNumber" type="tel" required value={formData.phoneNumber} onChange={(e) => handleChange("phoneNumber", e.target.value)} />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange("email", e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* VEHICLE DETAILS */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg border-b pb-2">Vehicle Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="brand">Brand/Make *</Label>
+                <Input id="brand" required value={formData.brand} onChange={(e) => handleChange("brand", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="model">Model *</Label>
+                <Input id="model" required value={formData.model} onChange={(e) => handleChange("model", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="variant">Variant (Optional)</Label>
+                <Input id="variant" value={formData.variant} onChange={(e) => handleChange("variant", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="year">Year of Manufacture *</Label>
+                <Input id="year" type="number" required value={formData.year} onChange={(e) => handleChange("year", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fuelType">Fuel Type *</Label>
+                <Select required value={formData.fuelType} onValueChange={(val) => handleChange("fuelType", val)}>
+                  <SelectTrigger><SelectValue placeholder="Select fuel type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Petrol">Petrol</SelectItem>
+                    <SelectItem value="Diesel">Diesel</SelectItem>
+                    <SelectItem value="CNG">CNG</SelectItem>
+                    <SelectItem value="Electric">Electric</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="transmission">Transmission</Label>
+                <Select value={formData.transmission} onValueChange={(val) => handleChange("transmission", val)}>
+                  <SelectTrigger><SelectValue placeholder="Select transmission" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Manual">Manual</SelectItem>
+                    <SelectItem value="Automatic">Automatic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationNumber">Registration Number *</Label>
+                <Input id="registrationNumber" required value={formData.registrationNumber} onChange={(e) => handleChange("registrationNumber", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="seatingCapacity">Seating Capacity *</Label>
+                <Input id="seatingCapacity" type="number" required value={formData.seatingCapacity} onChange={(e) => handleChange("seatingCapacity", e.target.value)} />
+              </div>
+            </div>
+          </div>
+
+          {/* RENTAL PREFERENCES */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg border-b pb-2">Rental Preferences</h3>
+            <div className="space-y-2">
+              <Label htmlFor="availability">Availability *</Label>
+              <Select required value={formData.availability} onValueChange={(val) => handleChange("availability", val)}>
+                <SelectTrigger><SelectValue placeholder="Select availability" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Immediate / Anytime">Immediate / Anytime</SelectItem>
+                  <SelectItem value="Weekends Only">Weekends Only</SelectItem>
+                  <SelectItem value="Specific Dates">Specific Dates</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {formData.availability === "Specific Dates" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="availableFrom">Available From *</Label>
+                  <Input id="availableFrom" type="date" required value={formData.availableFrom} onChange={(e) => handleChange("availableFrom", e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="availableUntil">Available Until *</Label>
+                  <Input id="availableUntil" type="date" required value={formData.availableUntil} onChange={(e) => handleChange("availableUntil", e.target.value)} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ADDITIONAL INFORMATION */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg border-b pb-2">Additional Information</h3>
+            <div className="space-y-2">
+              <Label htmlFor="additionalNotes">Additional Notes</Label>
+              <Textarea id="additionalNotes" value={formData.additionalNotes} onChange={(e) => handleChange("additionalNotes", e.target.value)} placeholder="Any other details you want to share..." />
+            </div>
+          </div>
+
+          <div className="pt-4 border-t">
+            <button
+              type="submit"
+              className="w-full h-12 rounded-full bg-primary text-white font-bold text-lg hover:bg-[#EA580C] transition-colors"
+            >
+              Submit via WhatsApp
+            </button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
